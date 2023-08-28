@@ -12,6 +12,16 @@ export default function ChapterSummary({ navigation, id, chaptersById, topLevelS
         navigation.navigate('SingleChapter', chapter)
     }
 
+    function calculateProportion() {
+        if (childIds.length > 0) {
+            const totalPages = childIds.reduce((sum: number, index: string) => sum + chaptersById[Number(index)].totalPages, 0);
+            const totalReadPages = childIds.reduce((sum: number, index: string) => sum + chaptersById[Number(index)].currentPage, 0);
+            return `${totalReadPages}/${totalPages}`
+        } else {
+            return `${chapter.currentPage}/${chapter.totalPages}`;
+        }
+    }
+
     return (
         <View style={topLevelStyle}>
             <TouchableHighlight onPress={onPressParent}>
@@ -20,7 +30,7 @@ export default function ChapterSummary({ navigation, id, chaptersById, topLevelS
                         <StyledText style={styles.chapterName}>{chapter.chapterName}</StyledText>
                     </View>
                     <View style={{flex: 1}}>
-                        <StyledText style={styles.pageProportion}>{chapter.currentPage}/{chapter.totalPages}</StyledText>
+                        <StyledText style={styles.pageProportion}>{calculateProportion()}</StyledText>
                     </View>
                 </View>
             </TouchableHighlight>
