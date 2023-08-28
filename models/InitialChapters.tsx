@@ -1,4 +1,9 @@
-export const initialChapters: { [key: number]: any } = {
+export interface ChapterSignature {
+    [key: number]: any
+}
+
+
+export const initialChapters: ChapterSignature = {
     0: {
         id: 0,
         chapterName: "Chapter - 1",
@@ -6,7 +11,7 @@ export const initialChapters: { [key: number]: any } = {
         endPage: 0,
         totalPages: 200,
         isDone: false,
-        currentPage: 5,
+        currentPage: 0,
         timesRecapped: 0,
         datesCompleted: [],
         childChapters: [],
@@ -19,7 +24,7 @@ export const initialChapters: { [key: number]: any } = {
         endPage: 0,
         totalPages: 100,
         isDone: false,
-        currentPage: 10,
+        currentPage: 0,
         timesRecapped: 0,
         datesCompleted: [],
         childChapters: [3, 4],
@@ -32,7 +37,7 @@ export const initialChapters: { [key: number]: any } = {
         endPage: 0,
         totalPages: 150,
         isDone: false,
-        currentPage: 7,
+        currentPage: 0,
         timesRecapped: 0,
         datesCompleted: [],
         childChapters: [],
@@ -45,7 +50,7 @@ export const initialChapters: { [key: number]: any } = {
         endPage: 0,
         totalPages: 150,
         isDone: false,
-        currentPage: 19,
+        currentPage: 0,
         timesRecapped: 0,
         datesCompleted: [],
         childChapters: [],
@@ -58,7 +63,7 @@ export const initialChapters: { [key: number]: any } = {
         endPage: 0,
         totalPages: 150,
         isDone: false,
-        currentPage: 25,
+        currentPage: 0,
         timesRecapped: 0,
         datesCompleted: [],
         childChapters: [],

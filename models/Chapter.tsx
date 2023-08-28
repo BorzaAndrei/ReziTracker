@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Recap from "./Recap";
+import { ChapterSignature } from "./InitialChapters";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Slider from "@react-native-community/slider";
 
@@ -9,7 +10,7 @@ const Chapter = ({navigation, route}: {navigation: any, route: any}) => {
 
     const [name, setName] = useState(route.params.chapterName)
     const [totalPages, setTotalPages] = useState(route.params.totalPages)
-    // const [startPage, setStartPage] = useState(props.startPage)
+    const [startPage, setStartPage] = useState(route.params.startPage)
     // const [endPage, setEndPage] = useState(props.endPage)
     const [currentPage, setCurrentPage] = useState(route.params.currentPage)
     // const [timesRecapped, setTimesRecapped] = useState(props.timesRecapped)
@@ -22,6 +23,13 @@ const Chapter = ({navigation, route}: {navigation: any, route: any}) => {
 
 
     function updateCurrentPage(currentValue: any) {
+        AsyncStorage.getItem("chapters").then((chaptersUnparsed) => {
+            if (chaptersUnparsed) {
+                var chapters: ChapterSignature = JSON.parse(chaptersUnparsed);
+                chapters[Number(route.params.id)].currentPage = currentValue;
+                AsyncStorage.setItem("chapters", JSON.stringify(chapters))
+            }
+        })
         setCurrentPage(currentValue)
     }
 
@@ -37,9 +45,10 @@ const Chapter = ({navigation, route}: {navigation: any, route: any}) => {
                     Total Pages: {totalPages}
                 </Text>
                 <Slider 
-                    minimumValue={0}
-                    maximumValue={200}
+                    minimumValue={startPage}
+                    maximumValue={totalPages}
                     step={1}
+                    value={currentPage}
                     onSlidingComplete={updateCurrentPage}
                 />
             </View>

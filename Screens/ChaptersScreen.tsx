@@ -1,15 +1,34 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Chapter from "../models/Chapter";
 import ChapterProps from "../models/ChapterProps";
-import { initialChapters } from "../models/InitialChapters";
+import { initialChapters, ChapterSignature } from "../models/InitialChapters";
 import ChapterSummary from "../models/ChapterSummary";
 
 
 const ChaptersScreen = (props: any) => {
 
     const [chapters, setChapters] = useState(initialChapters);
+
+     function loadChapters() {
+        AsyncStorage.getItem("chapters").then((chapters) => {
+            if (chapters){
+                let obj: ChapterSignature = JSON.parse(chapters);
+                setChapters(obj);
+            } else {
+                setChapters(initialChapters);
+                AsyncStorage.setItem("chapters", JSON.stringify(initialChapters))
+            }
+        })
+        .catch(() => {
+            return setChapters(initialChapters);
+        })
+    }
+
+    useEffect(() => {
+        loadChapters();
+    })
 
     return (
         <View>
