@@ -1,4 +1,4 @@
-import Chapter from "./Chapter";
+import Chapter from "../Screens/ChapterScreen";
 
 type ChapterProps = {
     id: number,
