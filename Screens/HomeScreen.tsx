@@ -21,7 +21,7 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
     }
 
     return (
-        <ScrollView>
+        <ScrollView style={{backgroundColor: '#fff'}}>
             <Countdown />
             <TotalProgress chapters={chapters}/>
             <View style={styles.button}>

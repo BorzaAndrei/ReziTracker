@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { ChapterSignature } from "../models/InitialChapters";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Slider from "@react-native-community/slider";
+import StyledText from "../components/StyleText";
 
 
 const Chapter = ({navigation, route}: {navigation: any, route: any}) => {
@@ -32,26 +33,9 @@ const Chapter = ({navigation, route}: {navigation: any, route: any}) => {
     }
 
 
-
-    return (
-        <View>
-            <View>
-                <Text>{name}</Text>
-                <Text>{percentageDone()}%</Text>
-                <Text>
-                    Current Page: {currentPage}
-                    Total Pages: {endPage}
-                </Text>
-                <Slider 
-                    minimumValue={startPage}
-                    maximumValue={endPage}
-                    step={1}
-                    value={currentPage}
-                    onSlidingComplete={updateCurrentPage}
-                />
-            </View>
-        </View>
-    )
+    const handleSliderComplete = (value: any) => {
+        updateCurrentPage(value);
+    }
 
     function totalPages() {
         return route.params.endPage - route.params.startPage
@@ -61,10 +45,59 @@ const Chapter = ({navigation, route}: {navigation: any, route: any}) => {
         return Math.floor(((currentPage - startPage) / totalPages()) * 100)
     }
 
+    return (
+        <View style={styles.container}>
+            <StyledText style={styles.chapterName}>{name}</StyledText>
+            <StyledText style={styles.percentage}>Percentage completed: {percentageDone()}%</StyledText>
+            <View style={styles.pageInfoContainer}>
+                <StyledText style={styles.pageInfo}>
+                    Current Page: {currentPage}
+                </StyledText>
+                <StyledText style={styles.pageInfo}>
+                    Total Pages: {endPage}
+                </StyledText>
+            </View>
+            
+            <Slider 
+                style={styles.slider}
+                minimumValue={startPage}
+                maximumValue={endPage}
+                step={1}
+                value={currentPage}
+                tapToSeek={true}
+                onSlidingComplete={handleSliderComplete}
+            />
+        </View>
+    )
+
 }
 
 const styles = StyleSheet.create({
-    
+    container: {
+        padding: 16,
+        borderRadius: 8,
+        marginBottom: 16,
+      },
+      chapterName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
+      },
+      percentage: {
+        fontSize: 16,
+        marginBottom: 4,
+      },
+      pageInfo: {
+        fontSize: 14,
+        marginBottom: 12,
+      },
+      slider: {
+        marginBottom: 8,
+      },
+      pageInfoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      },
 })
 
 export default Chapter
