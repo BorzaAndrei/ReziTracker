@@ -27,7 +27,7 @@ const StyledText = ({
 const styles = StyleSheet.create({
   defaultTextStyle: {
     color: 'rgba(83,157,241,1)',
-    fontSize: 20,
+    fontSize: 15,
   },
 });
 

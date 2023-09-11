@@ -39,22 +39,15 @@ export default function ChapterSummary({ navigation, id, chaptersById, topLevelS
 
 
 
-    function onPressParent() {
-        navigation.navigate('SingleChapter', chapter)
+    function onPressNavigateChapter() {
+        navigation.push('SingleChapter', {
+            chapter: chapter,
+            chaptersById: chaptersById
+        })
     }
 
     function onPressShow() {
         setShowChildView(!showChildView);
-    }
-
-    function calculateProportion(idOfChilds: any) {
-        if (childIds.length > 0) {
-            const totalPages = childIds.reduce((sum: number, index: string) => sum + (chaptersById[Number(index)].endPage - chaptersById[Number(index)].startPage), 0);
-            const totalReadPages = childIds.reduce((sum: number, index: string) => sum + chaptersById[Number(index)].currentPage - chaptersById[Number(index)].startPage, 0);
-            return `${totalReadPages}/${totalPages}`
-        } else {
-            return `${chapter.currentPage - chapter.startPage}/${chapter.endPage - chapter.startPage}`;
-        }
     }
 
     return (
@@ -62,7 +55,7 @@ export default function ChapterSummary({ navigation, id, chaptersById, topLevelS
                 <View style={styles.chapterView}>
                     {childIds.length > 0 ?
                         <View style={{flex: 4}}>
-                            <TouchableHighlight onPress={onPressShow} onLongPress={onPressParent} underlayColor="#DDDDDD">
+                            <TouchableHighlight onPress={onPressShow} onLongPress={onPressNavigateChapter} underlayColor="#DDDDDD">
                                 
                                     <StyledText style={{color: 'red'}}>{chapter.chapterName}</StyledText>
                                 
@@ -70,7 +63,7 @@ export default function ChapterSummary({ navigation, id, chaptersById, topLevelS
                         </View>
                         :
                         <View style={{flex: 4}}>
-                            <TouchableHighlight onPress={onPressParent} underlayColor="#DDDDDD">
+                            <TouchableHighlight onPress={onPressNavigateChapter} underlayColor="#DDDDDD">
                                 
                                     <StyledText>{chapter.chapterName}</StyledText>
                                 
@@ -111,7 +104,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     childrenView: {
-        marginLeft: '3%',
+        marginLeft: '5%',
         marginTop: '2%'
     }
 })
