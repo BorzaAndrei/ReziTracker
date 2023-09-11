@@ -83,7 +83,7 @@ const Chapter = ({navigation, route}: {navigation: any, route: any}) => {
                         </View>
                         <View style={styles.pageInfoContainer}>
                             <StyledText>Pagina curenta:</StyledText>
-                            <StyledText>{currentPage}</StyledText>
+                            <StyledText>{currentPage == startPage ? `Neinceput` : currentPage >= endPage ? 'Finalizat' : currentPage}</StyledText>
                         </View>
                         <View style={styles.pageInfoContainer}>
                             <StyledText>Numar pagini citite din total:</StyledText>
