@@ -52,27 +52,32 @@ export default function ChapterSummary({ navigation, id, chaptersById, topLevelS
 
     return (
         <View style={topLevelStyle}>
-                <View style={styles.chapterView}>
+                <View>
                     {childIds.length > 0 ?
-                        <View style={{flex: 4}}>
-                            <TouchableHighlight onPress={onPressShow} onLongPress={onPressNavigateChapter} underlayColor="#DDDDDD">
-                                
-                                    <StyledText style={{color: 'red'}}>{chapter.chapterName}</StyledText>
-                                
-                            </TouchableHighlight>
+                        <View style={styles.chapterView}>
+                            <View style={{flex: 4}}>
+                                <TouchableHighlight onPress={onPressShow} onLongPress={onPressNavigateChapter} underlayColor="#DDDDDD">
+                                    <View>
+                                        <StyledText style={{color: 'rgba(69,93,150,1)'}}>{`${chapter.chapterName}${chapter.isDone ? ' \u2611' : ''}`}</StyledText>
+                                    </View>
+                                </TouchableHighlight>
+                            </View>
+                            <View style={{flex: 2}}>
+                                <StyledText style={{...styles.pageProportion, color: 'rgba(69,93,150,1)'}}>{totalReadPages}/{totalPages}</StyledText>
+                            </View>
                         </View>
                         :
-                        <View style={{flex: 4}}>
-                            <TouchableHighlight onPress={onPressNavigateChapter} underlayColor="#DDDDDD">
-                                
-                                    <StyledText>{chapter.chapterName}</StyledText>
-                                
-                            </TouchableHighlight>
+                        <View style={styles.chapterView}>
+                            <View style={{flex: 4}}>
+                                <TouchableHighlight onPress={onPressNavigateChapter} underlayColor="#DDDDDD">
+                                        <StyledText>{`${chapter.chapterName}${chapter.isDone ? ' \u2611' : ''}`}</StyledText>
+                                </TouchableHighlight>
+                            </View>
+                            <View style={{flex: 2}}>
+                                <StyledText style={styles.pageProportion}>{totalReadPages}/{totalPages}</StyledText>
+                            </View>
                         </View>
                     }
-                    <View style={{flex: 2}}>
-                        <StyledText style={styles.pageProportion}>{totalReadPages}/{totalPages}</StyledText>
-                    </View>
                 </View>
             
             {showChildView && (

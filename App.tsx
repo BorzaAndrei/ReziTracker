@@ -21,7 +21,7 @@ function App(): JSX.Element {
       <Stack.Navigator>
         <Stack.Screen name='Home' component={HomeScreen} options={{ title: 'ReziTracker', headerTintColor: 'rgba(83,157,241,1)'}} />
         <Stack.Screen name='ChaptersScreen' component={ChaptersScreen} options={{ title: 'Capitole', headerTintColor: 'rgba(83,157,241,1)'}} />
-        <Stack.Screen name='SingleChapter' component={Chapter} options={{title: 'Chapter', headerTintColor: 'rgba(83,157,241,1)'}}/>
+        <Stack.Screen name='SingleChapter' component={Chapter} options={{title: 'Capitol', headerTintColor: 'rgba(83,157,241,1)'}}/>
       </Stack.Navigator>
     </NavigationContainer>
 
