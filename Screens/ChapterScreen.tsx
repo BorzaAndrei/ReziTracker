@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, ScrollView, StyleSheet, View} from 'react-native';
-import {initialChapters} from '../models/InitialChapters';
+import {
+  AllChaptersSignature,
+  ChapterSignature,
+} from '../models/InitialChapters';
 import Slider from '@react-native-community/slider';
 import StyledText from '../components/StyleText';
 import ChapterSummary from '../components/ChapterSummary';
 import Card from '../components/Card';
-import {useIsFocused} from '@react-navigation/native';
 import useDataManagement from '../utils/LoadChapters';
 
 const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
@@ -40,10 +42,11 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
     calculatePercentCompleted(totalReadPages, totalPages),
   );
 
-  const [disabledResetButton, setDisabledResetButton] = useState(
-    false,
-    // !chapters[currentChapterId].isDone,
+  const [timesRecapped, setTimesRecapped] = useState(
+    chapters[currentChapterId].timesRecapped,
   );
+
+  const [isDone, setIsDone] = useState(chapters[currentChapterId].isDone);
 
   // useEffect(() => {
   //     navigation.setOptions({ headerRight: () => (
@@ -51,98 +54,132 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
   //     ) })
   // }, [chapter.chapterName, navigation]);
 
-  const isFocused = useIsFocused();
+  useEffect(() => {
+    updateReadProgress(chapters[currentChapterId], chapters);
+    setDisplayCurrentPage(chapters[currentChapterId].currentPage);
+    setIsDone(chapters[currentChapterId].isDone);
+    setTimesRecapped(chapters[currentChapterId].timesRecapped);
+    if (isParent && !chapters[currentChapterId].isDone) {
+      checkParentDone(chapters[currentChapterId], chapters);
+    }
+  }, [chapters]);
 
-  function checkParentDone(tempChapter: any, allChapters: any) {
-    // const listTimesRecapped = tempChapter.childChapters.map(
-    //   (index: any) => allChapters[Number(index)].timesRecapped,
-    // );
-    // const minTimesRecapped = listTimesRecapped.reduce(
-    //   (min: number, current: number) => {
-    //     return Math.min(min, current);
-    //   },
-    //   Infinity,
-    // );
-    // var otherTempChapter = prepareUpdateChapter(
-    //   tempChapter,
-    //   'timesRecapped',
-    //   minTimesRecapped,
-    // );
-    // const listIsDone = tempChapter.childChapters.map(
-    //   (index: any) => allChapters[Number(index)].isDone,
-    // );
-    // const allDone = listIsDone.every((element: any) => element === true);
-    // updateChapter(prepareUpdateChapter(otherTempChapter, 'isDone', allDone));
-    // setChapters(prepareUpdateAllChapters(tempChapter));
+  function prepareUpdateChapter(
+    tempChapter: ChapterSignature,
+    key: any,
+    newValue: any,
+  ) {
+    return {...tempChapter, [key]: newValue};
   }
 
-  const handleSliderUpdate = (value: any) => {
+  function prepareUpdateAllChapters(tempChapter: ChapterSignature) {
+    var tempChapters = {...chapters};
+    tempChapters[currentChapterId] = tempChapter;
+    return tempChapters;
+  }
+
+  function checkParentDone(
+    tempChapter: ChapterSignature,
+    allChapters: AllChaptersSignature,
+  ) {
+    const listTimesRecapped = tempChapter.childChapters.map(
+      (index: any) => allChapters[Number(index)].timesRecapped,
+    );
+    const minTimesRecapped = listTimesRecapped.reduce(
+      (min: number, current: number) => {
+        return Math.min(min, current);
+      },
+      Infinity,
+    );
+    setTimesRecapped(minTimesRecapped);
+    var otherTempChapter = prepareUpdateChapter(
+      tempChapter,
+      'timesRecapped',
+      minTimesRecapped,
+    );
+    const listIsDone = tempChapter.childChapters.map(
+      (index: any) => allChapters[Number(index)].isDone,
+    );
+    const allDone = listIsDone.every((element: boolean) => element === true);
+    setIsDone(allDone);
+    otherTempChapter = prepareUpdateChapter(
+      otherTempChapter,
+      'isDone',
+      allDone,
+    );
+    saveChapters(prepareUpdateAllChapters(otherTempChapter));
+  }
+
+  const handleSliderUpdate = (value: number) => {
     setDisplayCurrentPage(value);
   };
 
-  const handleSliderComplete = (value: any) => {
-    // var tempChapter = prepareUpdateChapter(
-    //   chapters[currentChapterId],
-    //   'currentPage',
-    //   value,
-    // );
-    // updateReadProgress(tempChapter, chapters);
-    // tempChapter = handleIfDone(tempChapter);
-    // updateChapter(tempChapter);
-    // setChapters(prepareUpdateAllChapters(tempChapter));
+  const handleSliderComplete = (value: number) => {
+    var tempChapter = prepareUpdateChapter(
+      chapters[currentChapterId],
+      'currentPage',
+      value,
+    );
+    updateReadProgress(tempChapter, chapters);
+    tempChapter = handleIfDone(tempChapter);
+    saveChapters(prepareUpdateAllChapters(tempChapter));
+    setDisplayCurrentPage(value);
   };
 
-  function handleIfDone(tempChapter: any) {
-    // if (
-    //   tempChapter.currentPage >= chapters[currentChapterId].endPage &&
-    //   !chapters[currentChapterId].isDone &&
-    //   chapters[currentChapterId].childChapters.length == 0
-    // ) {
-    //   var otherTempChapter = prepareUpdateChapter(
-    //     tempChapter,
-    //     'timesRecapped',
-    //     tempChapter.timesRecapped + 1,
-    //   );
-    //   setDisabledResetButton(false);
-    //   return prepareUpdateChapter(otherTempChapter, 'isDone', true);
-    // } else {
-    //   return tempChapter;
-    // }
+  function handleIfDone(tempChapter: ChapterSignature): ChapterSignature {
+    if (
+      tempChapter.currentPage >= chapters[currentChapterId].endPage &&
+      !chapters[currentChapterId].isDone &&
+      chapters[currentChapterId].childChapters.length == 0
+    ) {
+      var otherTempChapter = prepareUpdateChapter(
+        tempChapter,
+        'timesRecapped',
+        tempChapter.timesRecapped + 1,
+      );
+      setTimesRecapped(otherTempChapter.timesRecapped);
+      setIsDone(true);
+      otherTempChapter = prepareUpdateChapter(otherTempChapter, 'isDone', true);
+      return otherTempChapter;
+    } else {
+      return tempChapter;
+    }
   }
 
-  function resetDisplayedChapter(displayedChapter: any) {
-    // var tempChapter = prepareUpdateChapter(displayedChapter, 'isDone', false);
-    // tempChapter = prepareUpdateChapter(
-    //   tempChapter,
-    //   'currentPage',
-    //   tempChapter.startPage,
-    // );
-    // var changedChapters = [tempChapter];
-    // if (isParent) {
-    //   changedChapters.push(
-    //     displayedChapter.childChapters
-    //       .map((index: any) => chapters[Number(index)])
-    //       .map((childChapter: any) => resetSubChapter(childChapter)),
-    //   );
-    // }
-    // changedChapters = changedChapters.flat();
-    // var tempChapters = {...chapters};
-    // changedChapters.forEach((changedChapter: any) => {
-    //   tempChapters[Number(changedChapter.id)] = changedChapter;
-    // });
-    // updateReadProgress(tempChapter, tempChapters);
-    // setDisabledResetButton(true);
-    // setChapters(tempChapters);
+  function resetDisplayedChapter(displayedChapter: ChapterSignature) {
+    var tempChapter = prepareUpdateChapter(displayedChapter, 'isDone', false);
+    setIsDone(false);
+    setDisplayCurrentPage(chapters[currentChapterId].startPage);
+    tempChapter = prepareUpdateChapter(
+      tempChapter,
+      'currentPage',
+      tempChapter.startPage,
+    );
+    var changedChapters: any = [tempChapter];
+    if (isParent) {
+      changedChapters.push(
+        displayedChapter.childChapters
+          .map((index: any) => chapters[Number(index)])
+          .map((childChapter: any) => resetSubChapter(childChapter)),
+      );
+    }
+    changedChapters = changedChapters.flat();
+    var tempChapters = {...chapters};
+    changedChapters.forEach((changedChapter: any) => {
+      tempChapters[Number(changedChapter.id)] = changedChapter;
+    });
+    updateReadProgress(tempChapter, tempChapters);
+    saveChapters(tempChapters);
   }
 
-  function resetSubChapter(subChapter: any) {
-    // var tempChapter = prepareUpdateChapter(subChapter, 'isDone', false);
-    // tempChapter = prepareUpdateChapter(
-    //   tempChapter,
-    //   'currentPage',
-    //   tempChapter.startPage,
-    // );
-    // return tempChapter;
+  function resetSubChapter(subChapter: ChapterSignature): ChapterSignature {
+    var tempChapter = prepareUpdateChapter(subChapter, 'isDone', false);
+    tempChapter = prepareUpdateChapter(
+      tempChapter,
+      'currentPage',
+      tempChapter.startPage,
+    );
+    return tempChapter;
   }
 
   function calculateTotalPages(ch: any, idOfChildren: any) {
@@ -185,16 +222,16 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
   }
 
   function updateReadProgress(newChapter: any, allChapters: any) {
-    // const calculatedTotalReadPages = calculateTotalReadPages(
-    //   newChapter,
-    //   newChapter.childChapters,
-    //   allChapters,
-    // );
-    // console.log(calculatedTotalReadPages);
-    // setPercentCompleted(
-    //   calculatePercentCompleted(calculatedTotalReadPages, totalPages),
-    // );
-    // setTotalReadPages(calculatedTotalReadPages);
+    const calculatedTotalReadPages = calculateTotalReadPages(
+      newChapter,
+      newChapter.childChapters,
+      allChapters,
+    );
+    console.log(calculatedTotalReadPages);
+    setPercentCompleted(
+      calculatePercentCompleted(calculatedTotalReadPages, totalPages),
+    );
+    setTotalReadPages(calculatedTotalReadPages);
   }
 
   function childComponents() {
@@ -217,8 +254,7 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
             <View style={styles.pageInfoContainer}>
               <StyledText>Pagina curenta:</StyledText>
               <StyledText>
-                {chapters[currentChapterId].currentPage ==
-                chapters[currentChapterId].startPage
+                {displayCurrentPage == chapters[currentChapterId].startPage
                   ? `Neinceput`
                   : displayCurrentPage >= chapters[currentChapterId].endPage
                   ? 'Finalizat'
@@ -233,9 +269,7 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
             </View>
             <View style={styles.pageInfoContainer}>
               <StyledText>Numar finalizari:</StyledText>
-              <StyledText>
-                {chapters[currentChapterId].timesRecapped}
-              </StyledText>
+              <StyledText>{timesRecapped}</StyledText>
             </View>
           </View>
         </Card>
@@ -248,11 +282,11 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
             minimumValue={chapters[currentChapterId].startPage}
             maximumValue={chapters[currentChapterId].endPage}
             step={1}
-            value={chapters[currentChapterId].currentPage}
+            value={displayCurrentPage}
             tapToSeek={true}
             onSlidingComplete={handleSliderComplete}
             onValueChange={handleSliderUpdate}
-            disabled={!disabledResetButton}
+            disabled={isDone}
           />
         </Card>
       </View>
@@ -285,9 +319,7 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
             </View>
             <View style={styles.pageInfoContainer}>
               <StyledText>Numar finalizari:</StyledText>
-              <StyledText>
-                {chapters[currentChapterId].timesRecapped}
-              </StyledText>
+              <StyledText>{timesRecapped}</StyledText>
             </View>
           </View>
         </Card>
@@ -316,7 +348,7 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
       <Button
         title="Reseteaza progresul"
         onPress={() => resetDisplayedChapter(chapters[currentChapterId])}
-        disabled={disabledResetButton}
+        disabled={!isDone}
       />
     </View>
   );

@@ -1,8 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AllChaptersSignature, initialChapters} from '../models/InitialChapters';
 import {useEffect, useState} from 'react';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function useDataManagement() {
+  const isFocused = useIsFocused();
+
   const [chapters, setChapters] =
     useState<AllChaptersSignature>(initialChapters);
 
@@ -10,7 +13,7 @@ export default function useDataManagement() {
     loadChapters().then((loadedChapters: any) => {
       setChapters(loadedChapters);
     });
-  }, []);
+  }, [isFocused]);
 
   const loadChapters = async () => {
     try {
