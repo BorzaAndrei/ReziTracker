@@ -1,20 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {StyleSheet, Button, ScrollView, View, Alert} from 'react-native';
+import {StyleSheet, Button, ScrollView, View} from 'react-native';
 import Countdown from '../components/Countdown';
-import {initialChapters} from '../models/InitialChapters';
 import TotalProgress from '../components/TotalProgress';
-import {useIsFocused} from '@react-navigation/native';
-import loadChapters from '../utils/LoadChapters';
+import useDataManagement from '../utils/LoadChapters';
 
 const HomeScreen = ({navigation}: {navigation: any}) => {
-  const [chapters, setChapters] = useState(initialChapters);
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    resetData();
-    loadChapters(setChapters);
-  }, [isFocused]);
+  const {chapters, saveChapters} = useDataManagement();
 
   function resetData() {
     AsyncStorage.removeItem('chapters');

@@ -1,17 +1,10 @@
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, ScrollView} from 'react-native';
-import {initialChapters} from '../models/InitialChapters';
+import React from 'react';
+import {StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
 import ChapterSummary from '../components/ChapterSummary';
-import {useIsFocused} from '@react-navigation/native';
-import loadChapters from '../utils/LoadChapters';
+import useDataManagement from '../utils/LoadChapters';
 
 const ChaptersScreen = (props: any) => {
-  const [chapters, setChapters] = useState(initialChapters);
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    loadChapters(setChapters);
-  }, [isFocused]);
+  const {chapters, saveChapters} = useDataManagement();
 
   return (
     <ScrollView>
@@ -19,6 +12,7 @@ const ChaptersScreen = (props: any) => {
         .filter(index => !chapters[Number(index)].isChild)
         .map(index => (
           <ChapterSummary
+            key={chapters[Number(index)].id}
             navigation={props.navigation}
             id={chapters[Number(index)].id}
             chaptersById={chapters}

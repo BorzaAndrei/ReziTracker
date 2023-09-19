@@ -1,10 +1,23 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export interface ChapterSignature {
-  [key: number]: any;
+export interface AllChaptersSignature {
+  [key: number]: ChapterSignature;
 }
 
-export const initialChapters: ChapterSignature = {
+export interface ChapterSignature {
+  id: number;
+  chapterName: string;
+  startPage: number;
+  endPage: number;
+  isDone: boolean;
+  currentPage: number;
+  timesRecapped: number;
+  datesCompleted: string[];
+  childChapters: number[];
+  isChild: boolean;
+}
+
+export const initialChapters: AllChaptersSignature = {
   100: {
     id: 100,
     chapterName: 'Kumar',
@@ -56,7 +69,7 @@ export const initialChapters: ChapterSignature = {
     isChild: true,
   },
   1: {
-    id: '1',
+    id: 1,
     chapterName: '9. Echiliblirul hidro-electric si acido-bazic',
     startPage: 0,
     endPage: 0,
@@ -68,7 +81,7 @@ export const initialChapters: ChapterSignature = {
     isChild: true,
   },
   2: {
-    id: '2',
+    id: 2,
     chapterName: 'Apa si electrolitii',
     startPage: 172,
     endPage: 190,
@@ -80,7 +93,7 @@ export const initialChapters: ChapterSignature = {
     isChild: true,
   },
   3: {
-    id: '3',
+    id: 3,
     chapterName: 'Dezechilibrele acido-bazice',
     startPage: 195,
     endPage: 202,
@@ -92,7 +105,7 @@ export const initialChapters: ChapterSignature = {
     isChild: true,
   },
   4: {
-    id: '4',
+    id: 4,
     chapterName: '10. Terapie Intensiva',
     startPage: 0,
     endPage: 0,
@@ -104,7 +117,7 @@ export const initialChapters: ChapterSignature = {
     isChild: true,
   },
   5: {
-    id: '5',
+    id: 5,
     chapterName: 'Insuficienta respiratorie',
     startPage: 224,
     endPage: 232,
@@ -116,7 +129,7 @@ export const initialChapters: ChapterSignature = {
     isChild: true,
   },
   6: {
-    id: '6',
+    id: 6,
     chapterName: 'Sindromul de detresa respiratorie acuta',
     startPage: 232,
     endPage: 233,

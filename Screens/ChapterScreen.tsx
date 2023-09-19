@@ -6,12 +6,15 @@ import StyledText from '../components/StyleText';
 import ChapterSummary from '../components/ChapterSummary';
 import Card from '../components/Card';
 import {useIsFocused} from '@react-navigation/native';
+import useDataManagement from '../utils/LoadChapters';
 
 const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
   const [currentChapterId, setCurrentChapterId] = useState(
     route.params.chapterId,
   );
-  const [chapters, setChapters] = useState(initialChapters);
+
+  const {chapters, saveChapters} = useDataManagement();
+
   const [isParent, setIsParent] = useState(
     chapters[currentChapterId].childChapters.length > 0,
   );
@@ -291,7 +294,7 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
         <Card>
           <StyledText style={styles.cardTitle}>Subcapitole:</StyledText>
 
-          {chapters[currentChapterId].map((index: any) => (
+          {chapters[currentChapterId].childChapters.map((index: any) => (
             <ChapterSummary
               navigation={navigation}
               id={index}
