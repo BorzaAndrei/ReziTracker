@@ -121,15 +121,17 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
       value,
     );
     updateReadProgress(tempChapter, chapters);
+    console.log('BEFORE HSC: ' + JSON.stringify(tempChapter));
     tempChapter = handleIfDone(tempChapter);
+    console.log('AFTER HSC: ' + JSON.stringify(tempChapter));
     saveChapters(prepareUpdateAllChapters(tempChapter));
-    setDisplayCurrentPage(value);
+    // setDisplayCurrentPage(value);
   };
 
   function handleIfDone(tempChapter: ChapterSignature): ChapterSignature {
     if (
       tempChapter.currentPage >= chapters[currentChapterId].endPage &&
-      !chapters[currentChapterId].isDone &&
+      // !chapters[currentChapterId].isDone &&
       chapters[currentChapterId].childChapters.length == 0
     ) {
       var otherTempChapter = prepareUpdateChapter(
@@ -137,7 +139,7 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
         'timesRecapped',
         tempChapter.timesRecapped + 1,
       );
-      setTimesRecapped(otherTempChapter.timesRecapped);
+      setTimesRecapped(tempChapter.timesRecapped + 1);
       setIsDone(true);
       otherTempChapter = prepareUpdateChapter(otherTempChapter, 'isDone', true);
       return otherTempChapter;
@@ -146,8 +148,12 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
     }
   }
 
-  function resetDisplayedChapter(displayedChapter: ChapterSignature) {
-    var tempChapter = prepareUpdateChapter(displayedChapter, 'isDone', false);
+  function resetDisplayedChapter() {
+    var tempChapter = prepareUpdateChapter(
+      chapters[currentChapterId],
+      'isDone',
+      false,
+    );
     setIsDone(false);
     setDisplayCurrentPage(chapters[currentChapterId].startPage);
     tempChapter = prepareUpdateChapter(
@@ -158,7 +164,7 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
     var changedChapters: any = [tempChapter];
     if (isParent) {
       changedChapters.push(
-        displayedChapter.childChapters
+        chapters[currentChapterId].childChapters
           .map((index: any) => chapters[Number(index)])
           .map((childChapter: any) => resetSubChapter(childChapter)),
       );
@@ -227,7 +233,6 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
       newChapter.childChapters,
       allChapters,
     );
-    console.log(calculatedTotalReadPages);
     setPercentCompleted(
       calculatePercentCompleted(calculatedTotalReadPages, totalPages),
     );
@@ -347,7 +352,7 @@ const Chapter = ({navigation, route}: {navigation: any; route: any}) => {
       {isParent ? parentComponents() : childComponents()}
       <Button
         title="Reseteaza progresul"
-        onPress={() => resetDisplayedChapter(chapters[currentChapterId])}
+        onPress={resetDisplayedChapter}
         disabled={!isDone}
       />
     </View>
